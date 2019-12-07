@@ -15,4 +15,11 @@
 		//b, c, d, e, and f, including uppercase.
 		return CanConvertHexStringToNumber = (/^([0-9]+|[A-F]+|[a-f]+)$/).test(String);
 	}
+	function clamp(num, min, max) {
+		//Restrict a number within a specified range.
+		if (isNaN(num) == true) {
+			num = 0
+		}
+		return num <= min ? min : num >= max ? max : num;
+	}
 </script>
