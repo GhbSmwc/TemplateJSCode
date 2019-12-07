@@ -1,0 +1,18 @@
+<script>
+	function CheckHexStringCanConvertToNumber(String) {
+		//This checks if the string that is intended to represent a hex number can be
+		//converted to a number (including bigInt). Returns true if it can otherwise false.
+		//Example1: CheckHexStringCanConvertToNumber("9"): true
+		//Example2: CheckHexStringCanConvertToNumber("F"): true
+		//Example3: CheckHexStringCanConvertToNumber("G"): false
+		//
+		//Different from checking if parseInt(string) would return a NaN, since that
+		//ignores any invalid characters after the valid characters (example:
+		//parseInt("F ", 16) would return 16 , despite the space character after "F").
+		//
+		//This uses regular expression and checks within the entire string (from start "^"
+		//to end "$") if all characters are only using 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a,
+		//b, c, d, e, and f, including uppercase.
+		return CanConvertHexStringToNumber = (/^([0-9]+|[A-F]+|[a-f]+)$/).test(String);
+	}
+</script>
