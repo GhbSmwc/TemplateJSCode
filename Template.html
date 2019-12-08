@@ -22,4 +22,13 @@
 		}
 		return num <= min ? min : num >= max ? max : num;
 	}
+	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
+		//To be used along with a hex input the user enters.
+		//This function is for the increment/decrement buttons since
+		//only the "number" input (only allows characters 0-9) allows
+		//the increment/decrement action (up/down button when selected,
+		//and pressing up and down)
+		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy, 10), Min, Max).toString(16).toUpperCase()
+		//Compute()
+	}
 </script>
