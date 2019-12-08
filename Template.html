@@ -28,7 +28,7 @@
 		//only the "number" input (only allows characters 0-9) allows
 		//the increment/decrement action (up/down button when selected,
 		//and pressing up and down)
-		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy, 10), Min, Max).toString(16).toUpperCase()
+		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
 		//Compute()
 	}
 </script>
