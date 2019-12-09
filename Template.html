@@ -31,4 +31,14 @@
 		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
 		//Compute()
 	}
+	function DisplaySignedHexString(num) {
+		//When hex numbers are being displayed, they are displayed as -<HexValue>.
+		//I wanted to display as -$<HexValue> instead.
+		if (num >= 0) {
+			num = "$"+ num.toString(16).toUpperCase()
+		} else {
+			num = "(-$" + Math.abs(num).toString(16).toUpperCase() + ")"
+		}
+		return num
+	}
 </script>
