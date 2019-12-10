@@ -13,7 +13,7 @@
 		//This uses regular expression and checks within the entire string (from start "^"
 		//to end "$") if all characters are only using 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a,
 		//b, c, d, e, and f, including uppercase.
-		return CanConvertHexStringToNumber = (/^([0-9]+|[A-F]+|[a-f]+)$/).test(String);
+		return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
 	}
 	function clamp(num, min, max) {
 		//Restrict a number within a specified range.
