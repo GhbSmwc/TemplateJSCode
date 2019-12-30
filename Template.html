@@ -15,11 +15,23 @@
 		//b, c, d, e, and f, including uppercase.
 		return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
 	}
+	function CorrectHexBigIntValue(String) {
+		//This converts the user's input hex string (negative numbers not allowed)
+		//to BigInt. If invalid, returns 0n.
+		if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
+			String = 0n
+		}
+		return CanConvertHexStringToBigInt = BigInt("0x" + String)
+	}
 	function clamp(num, min, max) {
 		//Restrict a number within a specified range.
 		if (isNaN(num) == true) {
 			num = 0
 		}
+		return num <= min ? min : num >= max ? max : num;
+	}
+	function BigIntclamp(num, min, max) {
+		//Restrict a number within a specified range, bigInt edition.
 		return num <= min ? min : num >= max ? max : num;
 	}
 	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
