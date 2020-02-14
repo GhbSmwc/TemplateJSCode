@@ -23,6 +23,16 @@
 		}
 		return CanConvertHexStringToBigInt = BigInt("0x" + String)
 	}
+	
+	function CorrectBinaryBigIntValue(String) {
+		//This converts the user's input binary string (negative numbers not allowed)
+		//to BigInt.
+		if ((/^([0]|[1])+$/).test(String) == false) {
+			String = 0n
+		}
+		return CanConvertHexStringToBigInt = BigInt("0b" + String)
+	}
+	
 	function clamp(num, min, max) {
 		//Restrict a number within a specified range.
 		if (isNaN(num) == true) {
@@ -63,5 +73,12 @@
 			num = "(-$" + Math.abs(num).toString(16).toUpperCase() + ")"
 		}
 		return num
+	}
+	
+	function pad(num, size) {
+		//This adds leading zeroes. [size] is the number of digits at minimum to show (less than that will fill this with 0s).
+		var s = num+"";
+		while (s.length < size) s = "0" + s;
+		return s;
 	}
 </script>
