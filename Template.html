@@ -1,4 +1,37 @@
 <script>
+	//These makes hex input texts behave like a number input, pressing UP/DOWN on the arrow keys to increment a hex input.
+		window.onload = function(){    
+			var FocusedElement = document.activeElement;
+			if(FocusedElement.addEventListener ) {
+				FocusedElement.addEventListener('keydown',this.keyHandler,false);
+			} else if(FocusedElement.attachEvent ) {
+				FocusedElement.attachEvent('onkeydown',this.keyHandler);
+			}
+		}
+	
+		function keyHandler(e) {
+			if (((e.keyCode == 38)||e.keyCode == 40)&&(document.activeElement.className == "HexNumberInput")) {
+				var target;
+				var InputNumber = BigInt(CorrectHexBigIntValue(document.activeElement.value))
+				if (!e) var e = window.event;
+				if (e.target) target = e.target;
+				else if (e.srcElement) target = e.srcElement;
+		
+				if(e.keyCode == 38) {
+					InputNumber++
+				} else if(e.keyCode == 40) {
+					if (InputNumber > 0n) {
+						InputNumber--
+					}
+				}
+				document.activeElement.value = InputNumber.toString(16).toUpperCase()
+				//Not sure why this does not work, you see, number inputs, when pressing up or down, the blinking
+				//text cursor (or caret) gets positioned at the end of the string, however, with text inputs,
+				//pressing UP brings the cursor to the beginning of the line, and I wanted so that every time
+				//you increment/decrement a hex number, to bring the cursor to the end.
+					document.activeElement.setSelectionRange(0, document.activeElement.value.length - 1)
+			}
+		}
 	function CheckHexStringCanConvertToNumber(String) {
 		//This checks if the string that is intended to represent a hex number can be
 		//converted to a number (including bigInt). Returns true if it can otherwise false.
@@ -13,36 +46,36 @@
 		//This uses regular expression and checks within the entire string (from start "^"
 		//to end "$") if all characters are only using 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a,
 		//b, c, d, e, and f, including uppercase.
-		return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
+			return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
 	}
 	function CorrectHexBigIntValue(String) {
 		//This converts the user's input hex string (negative numbers not allowed)
 		//to BigInt.
-		if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
-			String = 0n
-		}
-		return CanConvertHexStringToBigInt = BigInt("0x" + String)
+			if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
+				String = 0n
+			}
+			return CanConvertHexStringToBigInt = BigInt("0x" + String)
 	}
 	
 	function CorrectBinaryBigIntValue(String) {
 		//This converts the user's input binary string (negative numbers not allowed)
 		//to BigInt.
-		if ((/^([0]|[1])+$/).test(String) == false) {
-			String = 0n
-		}
-		return CanConvertHexStringToBigInt = BigInt("0b" + String)
+			if ((/^([0]|[1])+$/).test(String) == false) {
+				String = 0n
+			}
+			return CanConvertHexStringToBigInt = BigInt("0b" + String)
 	}
 	
 	function clamp(num, min, max) {
 		//Restrict a number within a specified range.
-		if (isNaN(num) == true) {
-			num = 0
-		}
-		return num <= min ? min : num >= max ? max : num;
+			if (isNaN(num) == true) {
+				num = 0
+			}
+			return num <= min ? min : num >= max ? max : num;
 	}
 	function BigintClamp(num, min, max) {
 		//Restrict a number within a specified range, bigInt edition.
-		return num <= min ? min : num >= max ? max : num;
+			return num <= min ? min : num >= max ? max : num;
 	}
 	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
 		//To be used along with a hex input the user enters.
@@ -50,8 +83,8 @@
 		//only the "number" input (only allows characters 0-9) allows
 		//the increment/decrement action (up/down button when selected,
 		//and pressing up and down)
-		document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
-		//Compute()
+			document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
+			//Compute()
 	}
 	function BigintIncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
 		//To be used along with a hex input the user enters.
@@ -61,24 +94,23 @@
 		//and pressing up and down).
 		//
 		//This one is the BigInt version of IncreaseDecreaseHexInput.
-		document.getElementById(WhatInput).value = BigintClamp((CorrectHexBigIntValue(document.getElementById(WhatInput).value) + ChangeBy), Min, Max).toString(16).toUpperCase()
-		Calculate()
+			document.getElementById(WhatInput).value = BigintClamp((CorrectHexBigIntValue(document.getElementById(WhatInput).value) + ChangeBy), Min, Max).toString(16).toUpperCase()
 	}
 	function DisplaySignedHexString(num) {
 		//When hex numbers are being displayed, they are displayed as -<HexValue>.
 		//I wanted to display as -$<HexValue> instead.
-		if (num >= 0) {
-			num = "$"+ num.toString(16).toUpperCase()
-		} else {
-			num = "(-$" + Math.abs(num).toString(16).toUpperCase() + ")"
-		}
-		return num
+			if (num >= 0) {
+				num = "$"+ num.toString(16).toUpperCase()
+			} else {
+				num = "(-$" + Math.abs(num).toString(16).toUpperCase() + ")"
+			}
+			return num
 	}
 	
 	function pad(num, size) {
 		//This adds leading zeroes. [size] is the number of digits at minimum to show (less than that will fill this with 0s).
-		var s = num+"";
-		while (s.length < size) s = "0" + s;
-		return s;
+			var s = num+"";
+			while (s.length < size) s = "0" + s;
+			return s;
 	}
 </script>
