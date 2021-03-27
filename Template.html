@@ -1,6 +1,6 @@
 <script>
 	//These makes hex input texts behave like a number input, pressing UP/DOWN on the arrow keys to increment a hex input.
-		window.onload = function(){    
+		window.onload = function(){
 			var FocusedElement = document.activeElement;
 			if(FocusedElement.addEventListener ) {
 				FocusedElement.addEventListener('keydown',this.keyHandler,false);
@@ -19,17 +19,14 @@
 		
 				if(e.keyCode == 38) {
 					InputNumber++
+					e.preventDefault()	//Prevents the caret (blinking text cursor) from being placed at the beginning of the line.
 				} else if(e.keyCode == 40) {
 					if (InputNumber > 0n) {
 						InputNumber--
 					}
 				}
 				document.activeElement.value = InputNumber.toString(16).toUpperCase()
-				//Not sure why this does not work, you see, number inputs, when pressing up or down, the blinking
-				//text cursor (or caret) gets positioned at the end of the string, however, with text inputs,
-				//pressing UP brings the cursor to the beginning of the line, and I wanted so that every time
-				//you increment/decrement a hex number, to bring the cursor to the end.
-					document.activeElement.setSelectionRange(0, document.activeElement.value.length - 1)
+				document.activeElement.setSelectionRange(document.activeElement.value.length, document.activeElement.value.length)
 			}
 		}
 	function CheckHexStringCanConvertToNumber(String) {
