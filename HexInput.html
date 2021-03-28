@@ -1,0 +1,45 @@
+<input type="text" id="tester" class="HexNumberInput" onchange="code()"><br>
+<input type="text" id="tester2" class="HexNumberInput" onchange="code()"><br>
+<input type="text" id="tester3" class="somethingelse" onchange="code()"><br>
+<script>
+	window.onload = function(){
+		var FocusedElement = document.activeElement;
+		if(FocusedElement.addEventListener ) {
+			FocusedElement.addEventListener('keydown',this.keyHandler,false);
+		} else if(FocusedElement.attachEvent ) {
+			FocusedElement.attachEvent('onkeydown',this.keyHandler);
+		}
+	}
+
+	function keyHandler(e) {
+		if (((e.code == "ArrowUp")||e.code == "ArrowDown")&&(document.activeElement.className == "HexNumberInput")) {
+			var target;
+			var InputNumber = BigInt(CorrectHexBigIntValue(document.activeElement.value))
+			if (!e) var e = window.event;
+			if (e.target) target = e.target;
+			else if (e.srcElement) target = e.srcElement;
+	
+			if(e.code == "ArrowUp") {
+				InputNumber++
+				e.preventDefault()	//Prevents the caret (blinking text cursor) from being placed at the beginning of the line.
+			} else if(e.code == "ArrowDown") {
+				if (InputNumber > 0n) {
+					InputNumber--
+				}
+			}
+			document.activeElement.value = InputNumber.toString(16).toUpperCase()
+			document.activeElement.setSelectionRange(document.activeElement.value.length, document.activeElement.value.length)
+		}
+	}
+	function code() {
+		var b = 1 + 1
+	}
+	function CorrectHexBigIntValue(String) {
+		//This converts the user's input hex string (negative numbers not allowed)
+		//to BigInt.
+		if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
+			String = 0n
+		}
+		return CanConvertHexStringToBigInt = BigInt("0x" + String)
+	}
+</script>
