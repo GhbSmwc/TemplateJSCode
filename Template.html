@@ -54,7 +54,7 @@
 			return CanConvertHexStringToBigInt = BigInt("0x" + String)
 	}
 	
-	function CorrectBinaryBigIntValue(String) {
+	function CorrectBinBigIntValue(String) {
 		//This converts the user's input binary string (negative numbers not allowed)
 		//to BigInt.
 			if ((/^([0]|[1])+$/).test(String) == false) {
