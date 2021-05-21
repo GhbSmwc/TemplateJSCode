@@ -45,6 +45,14 @@
 		//b, c, d, e, and f, including uppercase.
 			return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
 	}
+	function CorrectDecBigIntValue(String) {
+		//This converts the user's input decimal string (negative numbers not allowed)
+		//to BigInt.
+		if ((/^([0-9])+$/).test(String) == false) {
+			String = 0n
+		}
+		return CanConvertHexStringToBigInt = BigInt(String)
+	}
 	function CorrectHexBigIntValue(String) {
 		//This converts the user's input hex string (negative numbers not allowed)
 		//to BigInt.
