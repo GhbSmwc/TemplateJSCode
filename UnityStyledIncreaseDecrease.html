@@ -1,0 +1,75 @@
+<h1 style="">Unity-styled number adjuster</h1>
+
+<p>Press and hold down the left mouse button over &ldquo;Value 1/2/3&rdquo; and move your mouse left or right to adjust the value in the input boxes</p>
+
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing1">Value 1:</span> <input type="number" id="Testing1" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing2">Value 2:</span> <input type="number" id="Testing2" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing3">Value 3:</span> <input type="number" id="Testing3" value="0"><br>
+
+<span id="MousePos"></span>
+<span id="DeltaDrag"></span>
+<span id="IncrementDecrement"></span>
+<span id="SourcePosition"></span>
+<script>
+//Initialize some variables
+		MouseDragOriginX = 0
+		MouseDragOriginY = 0
+		WhichElement = ""
+		ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
+//Attach event listeners to elements
+	window.onload=function(){
+		SourcePosition = 0
+		MouseState = ""
+		let thing = ""
+		//addEventListener only applies to individual elements, so we need to loop to place an event listener to each class.
+			let Index = 0
+			while (Index < ClickHoldChangeNumberClasses.length) {
+				thing = ClickHoldChangeNumberClasses[Index].id
+				ClickHoldChangeNumberClasses[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, ClickHoldChangeNumberClasses[Index].id))
+				Index++
+			}
+		document.addEventListener('mouseup', ExitPlaceDragOriginPos);
+		document.addEventListener('mousemove', logKey);
+		
+	}
+	function logKey(e) {
+		if (MouseState != "PressedDown") {
+			MouseDragOriginX = e.clientX
+			MouseDragOriginY = e.clientY
+		}
+		document.getElementById("MousePos").innerHTML = "Mouse position: (" + MouseDragOriginX.toString(10) + ", " + MouseDragOriginY.toString(10) + ")<br>"
+		document.getElementById("DeltaDrag").innerHTML = "Delta from mouse position: (" + (e.clientX - MouseDragOriginX).toString(10) + ", " + (e.clientY - MouseDragOriginY).toString(10) + ")<br>"
+		if (MouseState == "PressedDown") {
+			SubFunctionVariable = [e.clientX, e.clientY]
+			MouseMoveIncreaseDecrease()
+		}
+	}
+//When the user presses down on the mouse key
+	function PlaceDragOriginPos(ElementID) {
+		WhichElement = ElementID
+		MouseState = "PressedDown"
+		//Adjust source position
+			SourcePosition = parseInt(document.getElementById(WhichElement.substring((WhichElement.search(/_/) + 1), WhichElement.search(/$/))).value)
+		//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
+		//as it causes the user to drag selected text which could interrupt this)
+			if (window.getSelection) {
+				if (window.getSelection().empty) {  // Chrome
+					window.getSelection().empty();
+				} else if (window.getSelection().removeAllRanges) {  // Firefox
+					window.getSelection().removeAllRanges();
+				}
+			} else if (document.selection) {  // IE?
+				document.selection.empty();
+			}
+	}
+//After pressing down on the mouse key and moves the cursor left or right, to adjust the number in the input.
+//To use, make sure:
+//-the id part of the html tag is formatted like this: NameID_NumberInputID, where NameID is any name, without any underscores.
+//-the element where you want this effect on has the class "ClickHoldChangeNumber" and its id <NumberInputID> of which number input will be affected by it.
+	function MouseMoveIncreaseDecrease() {
+		document.getElementById(WhichElement.substring((WhichElement.search(/_/) + 1), WhichElement.search(/$/))).value = (SourcePosition + (SubFunctionVariable[0] - MouseDragOriginX)).toString(10)
+	}
+	function ExitPlaceDragOriginPos() {
+		MouseState = "Released"
+	}
+</script>
