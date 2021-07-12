@@ -1,10 +1,11 @@
 <h1 style="">Unity-styled number adjuster</h1>
 
-<p>Press and hold down the left mouse button over &ldquo;Value 1/2/3&rdquo; and move your mouse left or right to adjust the value in the input boxes</p>
+<p>Press and hold down the left mouse button over &ldquo;Value 1/2/3&rdquo; and move your mouse left or right to adjust the value in the input boxes.</p>
 
-<span class="ClickHoldChangeNumber" id="NumbInput_Testing1">Value 1:</span> <input type="number" id="Testing1" value="0"><br>
-<span class="ClickHoldChangeNumber" id="NumbInput_Testing2">Value 2:</span> <input type="number" id="Testing2" value="0"><br>
-<span class="ClickHoldChangeNumber" id="NumbInput_Testing3">Value 3:</span> <input type="number" id="Testing3" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing1_1_3_40">Value 1 (increments of 1):</span> <input type="number" id="Testing1" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing2_10_3_40">Value 2: (increments of 10)</span> <input type="number" id="Testing2" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing3_0.5_3_40">Value 3: (increments of 0.5)</span> <input type="number" id="Testing3" value="0"><br>
+<span class="ClickHoldChangeNumber" id="NumbInput_Testing4_0.25_3_40">Value 4: (increments of 0.25)</span> <input type="number" id="Testing4" value="0"><br>
 
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -37,7 +38,7 @@
 			MouseDragOriginX = e.clientX
 			MouseDragOriginY = e.clientY
 		}
-		document.getElementById("MousePos").innerHTML = "Mouse position: (" + MouseDragOriginX.toString(10) + ", " + MouseDragOriginY.toString(10) + ")<br>"
+		document.getElementById("MousePos").innerHTML = "<br><br>Mouse position: (" + MouseDragOriginX.toString(10) + ", " + MouseDragOriginY.toString(10) + ")<br>"
 		document.getElementById("DeltaDrag").innerHTML = "Delta from mouse position: (" + (e.clientX - MouseDragOriginX).toString(10) + ", " + (e.clientY - MouseDragOriginY).toString(10) + ")<br>"
 		if (MouseState == "PressedDown") {
 			SubFunctionVariable = [e.clientX, e.clientY]
@@ -49,7 +50,7 @@
 		WhichElement = ElementID
 		MouseState = "PressedDown"
 		//Adjust source position
-			SourcePosition = parseInt(document.getElementById(WhichElement.substring((WhichElement.search(/_/) + 1), WhichElement.search(/$/))).value)
+			SourcePosition = parseFloat(document.getElementById((WhichElement.split("_"))[1]).value)
 		//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
 		//as it causes the user to drag selected text which could interrupt this)
 			if (window.getSelection) {
@@ -64,10 +65,49 @@
 	}
 //After pressing down on the mouse key and moves the cursor left or right, to adjust the number in the input.
 //To use, make sure:
-//-the id part of the html tag is formatted like this: NameID_NumberInputID, where NameID is any name, without any underscores.
+//-it has the id part of the html tag is formatted like this: NameID_NumberInputID_Rate_RoundSetting_MouseMoveDistanceToIncrement
+// where:
+//--NameID: is any name, without any underscores.
+//--NumberInputID: is an ID for the input element to be affected by this system
+//--Rate: is how much the value increase or decrease per mouse "pixel" movement (if this is a "2", that means for "pixel" the mouse move will increase/decrease this value by 2). This should not be 0!!
+//--RoundSetting: rounds to the nearest increment by "Rate" based on the following settings:
+//---0 = no, just +- by Rate
+//---1 = yes, round down to nearest increment
+//---2 = yes, round up to nearest increment
+//---3 = yes, round 1/2 up (if 0.5, round towards positive infinity)
+//--MouseMoveDistanceToIncrement is how far the mouse should move for each increment/decrement, in "pixels". This should not be 0!!
+// WhichElement.split("_")[0] = "NameID"
+// WhichElement.split("_")[1] = "NumberInputID"
+// WhichElement.split("_")[2] = "Rate"
+// WhichElement.split("_")[3] = "RoundSetting"
+// WhichElement.split("_")[4] = "MouseMoveDistanceToIncrement"
 //-the element where you want this effect on has the class "ClickHoldChangeNumber" and its id <NumberInputID> of which number input will be affected by it.
 	function MouseMoveIncreaseDecrease() {
-		document.getElementById(WhichElement.substring((WhichElement.search(/_/) + 1), WhichElement.search(/$/))).value = (SourcePosition + (SubFunctionVariable[0] - MouseDragOriginX)).toString(10)
+		document.getElementById((WhichElement.split("_"))[1]).value = CustomRound((SourcePosition + (Math.floor((SubFunctionVariable[0] - MouseDragOriginX) / parseInt(WhichElement.split("_")[4])) * parseFloat((WhichElement.split("_"))[2]))), parseFloat(WhichElement.split("_")[2]), parseInt(WhichElement.split("_")[3])).toString(10)
+	}
+	function CustomRound(InputNumber, MultipleToRoundTowards, RoundingSettings) {
+		//RoundingSettings:
+		//-0 = no, just +- by Rate
+		//-1 = yes, round down to nearest increment
+		//-2 = yes, round up to nearest increment
+		//-3 = yes, round 1/2 up (if 0.5, round towards positive infinity)
+			let OutputNumber = 0
+		switch (RoundingSettings) {
+			case 1:
+				OutputNumber = Math.floor(InputNumber / MultipleToRoundTowards) * MultipleToRoundTowards
+				break
+			case 2:
+				OutputNumber = Math.ceiling(InputNumber / MultipleToRoundTowards) * MultipleToRoundTowards
+				break
+			case 3:
+				OutputNumber = Math.round(InputNumber / MultipleToRoundTowards) * MultipleToRoundTowards
+				break
+			default:
+				OutputNumber = InputNumber
+				break
+			}
+		
+		return OutputNumber
 	}
 	function ExitPlaceDragOriginPos() {
 		MouseState = "Released"
