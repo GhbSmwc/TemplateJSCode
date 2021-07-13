@@ -8,15 +8,18 @@
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+.ClickHoldChangeNumber {
+	cursor: ew-resize
+}
 </style>
 
 <h1>Unity-styled number adjuster</h1>
 <p>Press and hold down the left mouse button over &ldquo;Value 1/2/3/4&rdquo; and move your mouse left or right to adjust the value in the input boxes.</p>
 <table>
-<tr><td><span class="ClickHoldChangeNumber noselect" id="Drag1" data-drag_increment_number_id="Testing1" data-drag_increment_number_mousemove_distance="10">Value 1 (increments of 1):</span></td><td><input type="number" id="Testing1" value="0"></td></tr>
-<tr><td><span class="ClickHoldChangeNumber noselect" id="Drag2" data-drag_increment_number_id="Testing2" data-drag_increment_number_mousemove_distance="10">Value 2: (increments of 10)</span></td><td><input type="number" id="Testing2" value="0" step="10"></td></tr>
-<tr><td><span class="ClickHoldChangeNumber noselect" id="Drag3" data-drag_increment_number_id="Testing3" data-drag_increment_number_mousemove_distance="10">Value 3: (increments of 0.1</span>, also binary floating points <a href="https://0.30000000000000004.com/">may not represent exact values)</a></td><td><input type="number" id="Testing3" value="0" step="0.1"></td></tr>
-<tr><td><span class="ClickHoldChangeNumber noselect" id="Drag4" data-drag_increment_number_id="Testing4" data-drag_increment_number_mousemove_distance="10">Value 4: (increments of 0.5)</span></td><td><input type="number" id="Testing4" value="0" step="0.5"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag1" data-drag_increment_number_id="Testing1" data-drag_increment_number_mousemove_distance="10"><span>Value 1 (increments of 1, ranging from -100 to 100):</span></td><td><input type="number" id="Testing1" value="0" min="-100" max="100"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag2" data-drag_increment_number_id="Testing2" data-drag_increment_number_mousemove_distance="10"><span>Value 2: (increments of 10, ranging from -200 to 200)</span></td><td><input type="number" id="Testing2" value="0" step="10" min="-200" max="200"></td></tr>
+<tr><td><span class="ClickHoldChangeNumber noselect" id="Drag3" data-drag_increment_number_id="Testing3" data-drag_increment_number_mousemove_distance="10">Value 3: (increments of 0.1, ranging from -1 to 1</span>, also binary floating points <a href="https://0.30000000000000004.com/">may not represent exact values)</a></td><td><input type="number" id="Testing3" value="0" step="0.1" data-drag_increment_number_tofixed="1" min="-1" max="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag4" data-drag_increment_number_id="Testing4" data-drag_increment_number_mousemove_distance="10"><span>Value 4: (increments of 0.5, ranging from -10 to 10)</span></td><td><input type="number" id="Testing4" value="0" step="0.5" data-drag_increment_number_tofixed="1" min="-10" max="10"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -85,7 +88,14 @@
 	//Note to self:
 	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the ID of the number input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
-			document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = CurrentNumberInputValueSelected + Math.floor((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+			let ValueForInput = CurrentNumberInputValueSelected + Math.floor((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+			if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
+				ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+			}
+			if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
+				ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
+			}
+			document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInput.toFixed(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).dataset.drag_increment_number_tofixed)
 		}
 		function InputStepParseFloatValidate(string) {
 			//If the input string cannot be parsed into a number, default it to 1.
