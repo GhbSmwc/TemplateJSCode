@@ -65,21 +65,23 @@
 		}
 	//When the user presses down on the mouse key
 		function PlaceDragOriginPos(ElementID) {
-			WhichElementIDClicked = ElementID	//This is which element the user have clicked on essentially. It's an object
-			MouseState = "PressedDown"
-			//Adjust source position
-				CurrentNumberInputValueSelected = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
-			//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
-			//as it causes the user to drag selected text which could interrupt this)
-				if (window.getSelection) {
-					if (window.getSelection().empty) {  // Chrome
-						window.getSelection().empty();
-					} else if (window.getSelection().removeAllRanges) {  // Firefox
-						window.getSelection().removeAllRanges();
+			if (event.button == 0) { //Prevent other mouse buttons besides the scroll wheel, the right click button, browser-back and browser-fourth button from triggering this.
+				WhichElementIDClicked = ElementID	//This is which element the user have clicked on essentially. It's an object
+				MouseState = "PressedDown"
+				//Adjust source position
+					CurrentNumberInputValueSelected = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
+				//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
+				//as it causes the user to drag selected text which could interrupt this)
+					if (window.getSelection) {
+						if (window.getSelection().empty) {  // Chrome
+							window.getSelection().empty();
+						} else if (window.getSelection().removeAllRanges) {  // Firefox
+							window.getSelection().removeAllRanges();
+						}
+					} else if (document.selection) {  // IE?
+						document.selection.empty();
 					}
-				} else if (document.selection) {  // IE?
-					document.selection.empty();
-				}
+			}
 		}
 	//After pressing down on the mouse key and moves the cursor left or right, to adjust the number in the input.
 	//Note to self:
