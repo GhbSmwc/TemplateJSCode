@@ -88,7 +88,7 @@
 	//Note to self:
 	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the ID of the number input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
-			let ValueForInput = CurrentNumberInputValueSelected + Math.floor((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+			let ValueForInput = Math.round((CurrentNumberInputValueSelected + Math.round((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) / InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
 			if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
 				ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
 			}
