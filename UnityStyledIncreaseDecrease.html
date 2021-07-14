@@ -14,12 +14,17 @@
 </style>
 
 <h1>Unity-styled number adjuster</h1>
+<h2>Floating point, decimal numbers</h2>
 <p>Press and hold down the left mouse button over &ldquo;Value 1/2/3/4&rdquo; and move your mouse left or right to adjust the value in the input boxes.</p>
 <table>
 <tr><td class="ClickHoldChangeNumber noselect" id="Drag1" data-drag_increment_number_id="Testing1" data-drag_increment_number_mousemove_distance="10"><span>Value 1 (increments of 1, ranging from -100 to 100):</span></td><td><input type="number" id="Testing1" value="0" min="-100" max="100"></td></tr>
 <tr><td class="ClickHoldChangeNumber noselect" id="Drag2" data-drag_increment_number_id="Testing2" data-drag_increment_number_mousemove_distance="10"><span>Value 2: (increments of 10, ranging from -200 to 200)</span></td><td><input type="number" id="Testing2" value="0" step="10" min="-200" max="200"></td></tr>
 <tr><td><span class="ClickHoldChangeNumber noselect" id="Drag3" data-drag_increment_number_id="Testing3" data-drag_increment_number_mousemove_distance="10">Value 3: (increments of 0.1, ranging from -1 to 1</span>, also binary floating points <a href="https://0.30000000000000004.com/">may not represent exact values)</a></td><td><input type="number" id="Testing3" value="0" step="0.1" data-drag_increment_number_tofixed="1" min="-1" max="1"></td></tr>
 <tr><td class="ClickHoldChangeNumber noselect" id="Drag4" data-drag_increment_number_id="Testing4" data-drag_increment_number_mousemove_distance="10"><span>Value 4: (increments of 0.5, ranging from -10 to 10)</span></td><td><input type="number" id="Testing4" value="0" step="0.5" data-drag_increment_number_tofixed="1" min="-10" max="10"></td></tr>
+</table>
+<h2>Bigints</h2>
+<table>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">testing123</td><td><input type="number" id="Testing5"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -29,6 +34,10 @@
 //Unity-styled value incrementer. This code enables any element with the class "ClickHoldChangeNumber" with the attributes of "data-*" to increase/decrease a number:
 //-dataset.drag_increment_number_id = the ID of the input number you wish to control
 //-dataset.drag_increment_number_mousemove_distance = how far the mouse should move for each increment/decrement of the value
+//-dataset.drag_increment_number_type = what type of number:
+//--"number" for double-precision floating point (default if omitted).
+//--"bigint" for bigint type.
+//-data-drag_increment_number_radix = what radix (example: 2 = binary, 10 = decimal (default if omitted), 16 = hexadecimal). For other bases besides 10, I recommend using text-type of input rather than number.
 //to enable an incrementer mechanic. This is inspired by the the game engine Unity's value editor as seen here: https://youtu.be/uY9PAcNMu8s?t=907
 	//Initialize some variables
 			MouseDragOriginX = 0
@@ -59,12 +68,13 @@
 			//Debug stuff
 				document.getElementById("MousePos").innerHTML = "<br><br>Mouse position: (" + MouseDragOriginX.toString(10) + ", " + MouseDragOriginY.toString(10) + ")<br>"
 				document.getElementById("DeltaDrag").innerHTML = "Delta from mouse position: (" + (e.clientX - MouseDragOriginX).toString(10) + ", " + (e.clientY - MouseDragOriginY).toString(10) + ")<br>"
+				document.getElementById("CurrentNumberInputValueSelected").innerHTML = "Starting number to increase/decrease from: " + (CurrentNumberInputValueSelected).toString(10)
 			if (MouseState == "PressedDown") {
 				MouseCoordinateArray = [e.clientX, e.clientY]
 				MouseMoveIncreaseDecrease()
 			}
 		}
-	//When the user presses down on the mouse key
+	//When the user presses down on the mouse button
 		function PlaceDragOriginPos(ElementID) {
 			if (event.button == 0) { //Prevent other mouse buttons besides the scroll wheel, the right click button, browser-back and browser-fourth button from triggering this.
 				WhichElementIDClicked = ElementID	//This is which element the user have clicked on essentially. It's an object
@@ -88,6 +98,7 @@
 	//Note to self:
 	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the ID of the number input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
+			let blah = document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type
 			let ValueForInput = Math.round((CurrentNumberInputValueSelected + Math.round((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) / InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
 			if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
 				ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
