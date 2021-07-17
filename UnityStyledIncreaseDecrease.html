@@ -40,14 +40,14 @@
 //-data-drag_increment_number_radix = what radix (example: 2 = binary, 10 = decimal (default if omitted), 16 = hexadecimal). For other bases besides 10, I recommend using text-type of input rather than number.
 //to enable an incrementer mechanic. This is inspired by the the game engine Unity's value editor as seen here: https://youtu.be/uY9PAcNMu8s?t=907
 	//Initialize some variables
-			MouseDragOriginX = 0
-			MouseDragOriginY = 0
+			var MouseDragOriginX = 0
+			var MouseDragOriginY = 0
 			WhichElementIDClicked = ""
-			ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
+			var ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
 	//Attach event listeners to elements
 		window.onload=function(){
 			CurrentNumberInputValueSelected = 0
-			MouseState = ""
+			var MouseState = ""
 			let thing = ""
 			//addEventListener only applies to individual elements, so we need to loop to place an event listener to each class.
 				let Index = 0
