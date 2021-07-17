@@ -24,7 +24,7 @@
 </table>
 <h2>Bigints</h2>
 <table>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="100" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -85,7 +85,7 @@
 					if ((document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == null)||(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == "number")) {
 						CurrentNumberInputValueSelected = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
 					} else {
-						CurrentNumberInputValueSelected = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
+						CurrentNumberInputValueSelected = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
 					}
 				//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
 				//as it causes the user to drag selected text which could interrupt this)
@@ -102,7 +102,7 @@
 		}
 	//After pressing down on the mouse key and moves the cursor left or right, to adjust the number in the input.
 	//Note to self:
-	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the ID of the number input from the element with the class "ClickHoldChangeNumber"
+	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the object of the number input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
 			switch (document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type) {
 			case "number":
@@ -119,13 +119,28 @@
 				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInput.toFixed(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).dataset.drag_increment_number_tofixed)
 				break
 			case "bigint":
-				let ValueForInputBigInt = RoundedDivisionQuotientRoundHalfUpBigInt(CurrentNumberInputValueSelected + (RoundedDivisionQuotientRoundHalfUpBigInt(BigInt(MouseCoordinateArray[0] - MouseDragOriginX), BigInt(parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance))) * CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)), CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) * CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
-				//Min and max
-					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
-						ValueForInput = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+				let HTMLNumberStep = 1n
+				if ((/^(-?\d+)$/).test(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) {
+					HTMLNumberStep = BigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+					if (HTMLNumberStep <= 0n) {
+						HTMLNumberStep = 1n
 					}
-					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
-						ValueForInput = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
+				}
+				let MouseMoveDistanceToChange = 1n
+				if ((/^(-?\d+)$/).test(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) {
+					MouseMoveDistanceToChange = BigInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)
+					if (MouseMoveDistanceToChange <= 0n) {
+						MouseMoveDistanceToChange = 1n
+					}
+				}
+				let asdf = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+				let ValueForInputBigInt = RoundedDivisionQuotientRoundHalfUpBigInt(CurrentNumberInputValueSelected + RoundedDivisionQuotientRoundHalfUpBigInt(BigInt(MouseCoordinateArray[0] - MouseDragOriginX), MouseMoveDistanceToChange) * HTMLNumberStep, HTMLNumberStep) * HTMLNumberStep
+				//Min and max
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
+						ValueForInput = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+					}
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
+						ValueForInput = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
 					}
 				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInputBigInt.toString(10)
 			}
@@ -139,14 +154,14 @@
 				}
 				return Output
 		}
-		function CheckIfNumberStringCanConvertToBigInt(string) {
+		function SafeConvertStringToBigint(string) {
 			//Checks if a given number string can convert to a bigint.
 			//Returns 0 if cannot, otherwise returns a number version of the given string.
 			let Output = 0n
 			if (CanConvertToBigInt = (/^(-?\d+)$/).test(string)) {
 				Output = BigInt(string)
 			} else {
-				let asdfasdf
+				let Output = 0n
 			}
 			return Output
 		}
