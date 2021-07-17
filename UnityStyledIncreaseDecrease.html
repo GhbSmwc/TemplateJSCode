@@ -24,12 +24,12 @@
 </table>
 <h2>Bigints</h2>
 <table>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">testing123</td><td><input type="number" id="Testing5"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
 <span id="IncrementDecrement"></span>
-<span id="CurrentNumberInputValueSelected"></span>
+<span id="CurrentNumberInputValueSelectedHTML"></span>
 <script>
 //Unity-styled value incrementer. This code enables any element with the class "ClickHoldChangeNumber" with the attributes of "data-*" to increase/decrease a number:
 //-dataset.drag_increment_number_id = the ID of the input number you wish to control
@@ -44,15 +44,14 @@
 			var MouseDragOriginY = 0
 			WhichElementIDClicked = ""
 			var ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
+			var MouseState = ""
 	//Attach event listeners to elements
 		window.onload=function(){
-			CurrentNumberInputValueSelected = 0
-			var MouseState = ""
-			let thing = ""
+			CurrentNumberInputValueSelected = 0 //may be a double or a bigint
+			MouseState = ""
 			//addEventListener only applies to individual elements, so we need to loop to place an event listener to each class.
 				let Index = 0
 				while (Index < ClickHoldChangeNumberClasses.length) {
-					thing = ClickHoldChangeNumberClasses[Index].id
 					ClickHoldChangeNumberClasses[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, ClickHoldChangeNumberClasses[Index].id))
 					Index++
 				}
@@ -68,7 +67,7 @@
 			//Debug stuff
 				document.getElementById("MousePos").innerHTML = "<br><br>Mouse position: (" + MouseDragOriginX.toString(10) + ", " + MouseDragOriginY.toString(10) + ")<br>"
 				document.getElementById("DeltaDrag").innerHTML = "Delta from mouse position: (" + (e.clientX - MouseDragOriginX).toString(10) + ", " + (e.clientY - MouseDragOriginY).toString(10) + ")<br>"
-				document.getElementById("CurrentNumberInputValueSelected").innerHTML = "Starting number to increase/decrease from: " + (CurrentNumberInputValueSelected).toString(10)
+				document.getElementById("CurrentNumberInputValueSelectedHTML").innerHTML = "Starting number to increase/decrease from: " + (CurrentNumberInputValueSelected).toString(10)
 			if (MouseState == "PressedDown") {
 				MouseCoordinateArray = [e.clientX, e.clientY]
 				MouseMoveIncreaseDecrease()
@@ -86,7 +85,7 @@
 					if ((document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == null)||(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == "number")) {
 						CurrentNumberInputValueSelected = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
 					} else {
-						CurrentNumberInputValueSelected = BigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
+						CurrentNumberInputValueSelected = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
 					}
 				//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
 				//as it causes the user to drag selected text which could interrupt this)
@@ -105,15 +104,30 @@
 	//Note to self:
 	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the ID of the number input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
-			if ((document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == null)||(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == "number")) {
+			switch (document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type) {
+			case "number":
+			case null:
+			default:
 				let ValueForInput = Math.round((CurrentNumberInputValueSelected + Math.round((MouseCoordinateArray[0] - MouseDragOriginX) / parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) / InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) * InputStepParseFloatValidate(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
-				if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
-					ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
-				}
-				if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
-					ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
-				}
+				//Min and max
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
+						ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+					}
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
+						ValueForInput = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
+					}
 				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInput.toFixed(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).dataset.drag_increment_number_tofixed)
+				break
+			case "bigint":
+				let ValueForInputBigInt = RoundedDivisionQuotientRoundHalfUpBigInt(CurrentNumberInputValueSelected + (RoundedDivisionQuotientRoundHalfUpBigInt(BigInt(MouseCoordinateArray[0] - MouseDragOriginX), BigInt(parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_mousemove_distance))) * CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)), CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)) * CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+				//Min and max
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
+						ValueForInput = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+					}
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
+						ValueForInput = CheckIfNumberStringCanConvertToBigInt(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
+					}
+				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInputBigInt.toString(10)
 			}
 		}
 		function InputStepParseFloatValidate(string) {
@@ -125,7 +139,68 @@
 				}
 				return Output
 		}
+		function CheckIfNumberStringCanConvertToBigInt(string) {
+			//Checks if a given number string can convert to a bigint.
+			//Returns 0 if cannot, otherwise returns a number version of the given string.
+			let Output = 0n
+			if (CanConvertToBigInt = (/^(-?\d+)$/).test(string)) {
+				Output = BigInt(string)
+			} else {
+				let asdfasdf
+			}
+			return Output
+		}
+		function RoundedDivisionQuotientRoundHalfUpBigInt(bigintNumberDividend, Divisor) {
+			let NegativeResult = 1n
+			if (IsSameSign(bigintNumberDividend, Divisor) == false) {
+				NegativeResult = -1n
+			}
+			if (bigintNumberDividend < 0n) {
+				bigintNumberDividend *= -1n
+			}
+			if (Divisor < 0n) {
+				Divisor *= -1n
+			}
+			//Bigint division always rounds towards 0. This function mimics Math.round(bigintNumberDividend / Divisor).
+			//Example1: 7 / 5 = 1.4 (or 1 and 2/5) -> Should round towards 1.0.
+			//Example2: 8 / 5 = 1.6 (or 1 and 3/5) -> Should round towards 2.0.
 			
+			//If halfway point of a fraction is an odd number, move this halfway point upwards by 1 unit
+			//Using the examples shown earlier, 5 / 2 = 2.5, so this means if the value is 2.5 or higher,
+			//it is greater than or equal to half of 5 and should increment the quotient by 1 to simulate
+			//a roundup.
+			//but we are working with integers, so the only possible values result a roundup is 3+
+				let HalfwayPoint = Divisor / 2n
+				if ((Divisor % 2n) != 0n) {
+					HalfwayPoint++
+				}
+			if (Divisor != 0n) { //Dividing by zero is not handled unlike double-precision.
+				let FractionNumerator = bigintNumberDividend % Divisor
+				let Quotient = bigintNumberDividend / Divisor
+				if (NegativeResult == 1n) {
+					if (FractionNumerator >= HalfwayPoint) {
+						Quotient++
+					}
+				} else {
+					//If EQUALS halfway, don't round down.
+						if (FractionNumerator > HalfwayPoint) {
+							Quotient++
+						}
+				}
+				return Quotient * NegativeResult
+			} else {
+				return 1n
+			}
+		}
+		function IsSameSign(a, b) {
+			//Returns true if both numbers are either positive or negative, otherwise (different signs), returns false.
+			//Works with bigint.
+			if (((a >= 0n) &&(b >= 0n))||((a < 0n) &&(b < 0n))) {
+				return true
+			} else {
+				return false
+			}
+		}
 		function ExitPlaceDragOriginPos() {
 			MouseState = "Released"
 		}
