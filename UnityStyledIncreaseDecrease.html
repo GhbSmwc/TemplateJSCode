@@ -11,6 +11,8 @@
 .ClickHoldChangeNumber {
 	cursor: ew-resize
 }
+	input[type='text'] { font-family: monospace;}
+	input[type='number'] { font-family: monospace;}
 </style>
 
 <h1>Unity-styled number adjuster</h1>
@@ -24,7 +26,8 @@
 </table>
 <h2>Bigints</h2>
 <table>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="100" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag6" data-drag_increment_number_id="Testing6" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint" data-drag_increment_number_radix_input="0x" data-drag_increment_number_radix_output="16">Testing 6 (hexadecimal)</td><td><input id="Testing6" value="0" type="text" id="Testing5" step="1"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -37,14 +40,15 @@
 //-dataset.drag_increment_number_type = what type of number:
 //--"number" for double-precision floating point (default if omitted).
 //--"bigint" for bigint type.
-//-data-drag_increment_number_radix = what radix (example: 2 = binary, 10 = decimal (default if omitted), 16 = hexadecimal). For other bases besides 10, I recommend using text-type of input rather than number.
+//-data-drag_increment_number_radix_input = what radix for input (example: "0b" = binary, "" = decimal (default if omitted), "0x" = hexadecimal). For other bases besides 10, I recommend using text-type of input rather than number.
+//-data-drag_increment_number_radix_output = what radix for the output, numbers only. 2 = binary, 10 = decimal (default), 16 = binary.
 //to enable an incrementer mechanic. This is inspired by the the game engine Unity's value editor as seen here: https://youtu.be/uY9PAcNMu8s?t=907
 	//Initialize some variables
-			var MouseDragOriginX = 0
-			var MouseDragOriginY = 0
-			WhichElementIDClicked = ""
-			var ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
-			var MouseState = ""
+		var MouseDragOriginX = 0
+		var MouseDragOriginY = 0
+		WhichElementIDClicked = ""
+		var ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
+		var MouseState = ""
 	//Attach event listeners to elements
 		window.onload=function(){
 			CurrentNumberInputValueSelected = 0 //may be a double or a bigint
@@ -79,13 +83,20 @@
 				WhichElementIDClicked = ElementID	//This is which element the user have clicked on essentially. It's an object
 				MouseState = "PressedDown"
 				//Adjust source position
-					if ((isNaN(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value) == true)||(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value == "")) {
-						document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = "0"
-					}
+					//if ((isNaN(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value) == true)||(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value == "")) {
+					//	document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = "0"
+					//}
 					if ((document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == null)||(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type == "number")) {
 						CurrentNumberInputValueSelected = parseFloat(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
 					} else {
-						CurrentNumberInputValueSelected = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value)
+						let Radix = 10
+						if ((/^\d+$/).test(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix_output)) {
+							Radix = parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix_output)
+							if ((Radix < 2)||(Radix > 36)) {
+								Radix = 10
+							}
+						}
+						CurrentNumberInputValueSelected = ParseBigIntValue((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value), Radix)
 					}
 				//Cancel selection (if it didn't cancel selection, it is possible to release the mouse button WITHOUT firing the ExitPlaceDragOriginPos until the user presses and releases the mouse button
 				//as it causes the user to drag selected text which could interrupt this)
@@ -102,7 +113,7 @@
 		}
 	//After pressing down on the mouse key and moves the cursor left or right, to adjust the number in the input.
 	//Note to self:
-	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the object of the number input from the element with the class "ClickHoldChangeNumber"
+	//- document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id) gets you the object of the input from the element with the class "ClickHoldChangeNumber"
 		function MouseMoveIncreaseDecrease() {
 			switch (document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_type) {
 			case "number":
@@ -133,7 +144,7 @@
 						MouseMoveDistanceToChange = 1n
 					}
 				}
-				let asdf = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).step)
+				let BigintInInput = ParseBigIntValue(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value, document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix_input)
 				let ValueForInputBigInt = RoundedDivisionQuotientRoundHalfUpBigInt(CurrentNumberInputValueSelected + RoundedDivisionQuotientRoundHalfUpBigInt(BigInt(MouseCoordinateArray[0] - MouseDragOriginX), MouseMoveDistanceToChange) * HTMLNumberStep, HTMLNumberStep) * HTMLNumberStep
 				//Min and max
 					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
@@ -142,7 +153,14 @@
 					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
 						ValueForInput = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
 					}
-				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInputBigInt.toString(10)
+				let Radix = 10
+				if ((/^\d+$/).test(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix_output)) {
+					Radix = parseInt(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix_output)
+					if ((Radix < 2)||(Radix > 36)) {
+						Radix = 10
+					}
+				}
+				document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value = ValueForInputBigInt.toString(Radix)
 			}
 		}
 		function InputStepParseFloatValidate(string) {
@@ -218,5 +236,35 @@
 		}
 		function ExitPlaceDragOriginPos() {
 			MouseState = "Released"
+		}
+		function ParseBigIntValue(string, radix) {
+			let Output = 0n
+			let NegativeNumber = 1n
+			if ((/^-/).test(string)) {
+				NegativeNumber = -1n
+			}
+			let DigitPart = string.substring((string.search(/[0-9a-zA-Z]/)))
+			switch (radix) {
+				//decimal
+					default:
+					if ((/^-?\d+$/).test(string)) {
+						Output = BigInt(string)
+					}
+				//Hexadecimal
+					case "0x":
+					case "0X":
+					if ((/^-?[0-9A-Fa-f]+$/).test(string)) {
+						Output = BigInt("0x" + DigitPart) * NegativeNumber
+					}
+					break
+				//Binary
+					case "0b":
+					case "0B":
+					if ((/^-?[01]+$/).test(string)) {
+						Output = BigInt("0b" + DigitPart) * NegativeNumber
+					}
+			
+			}
+			return Output
 		}
 </script>
