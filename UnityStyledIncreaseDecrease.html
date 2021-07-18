@@ -252,6 +252,7 @@
 					}
 					break
 				//Hexadecimal
+					case 16:
 					case "0x":
 					case "0X":
 					if ((/^-?[0-9A-Fa-f]+$/).test(string)) {
@@ -259,6 +260,7 @@
 					}
 					break
 				//Binary
+					case 2:
 					case "0b":
 					case "0B":
 					if ((/^-?[01]+$/).test(string)) {
