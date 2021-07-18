@@ -26,8 +26,8 @@
 </table>
 <h2>Bigints</h2>
 <table>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Testing 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag6" data-drag_increment_number_id="Testing6" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint" data-drag_increment_number_radix_input="0x" data-drag_increment_number_radix_output="16">Testing 6 (hexadecimal)</td><td><input id="Testing6" value="0" type="text" id="Testing5" step="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Value 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag6" data-drag_increment_number_id="Testing6" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint" data-drag_increment_number_radix_input="0x" data-drag_increment_number_radix_output="16">Value 6 (hexadecimal)</td><td><input id="Testing6" value="0" type="text" id="Testing5" step="1"></td></tr>
 </table>
 <span id="MousePos"></span>
 <span id="DeltaDrag"></span>
@@ -250,6 +250,7 @@
 					if ((/^-?\d+$/).test(string)) {
 						Output = BigInt(string)
 					}
+					break
 				//Hexadecimal
 					case "0x":
 					case "0X":
