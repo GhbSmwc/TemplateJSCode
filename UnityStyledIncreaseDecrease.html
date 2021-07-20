@@ -235,9 +235,10 @@
 				return false
 			}
 		}
-		function ExitPlaceDragOriginPos() {
-			MouseState = "Released"
-		}
+		//When the user let goes of the mouse button.
+			function ExitPlaceDragOriginPos() {
+				MouseState = "Released"
+			}
 		function ParseBigIntValue(string, radix) {
 			let Output = 0n
 			let NegativeNumber = 1n
