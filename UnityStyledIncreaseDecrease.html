@@ -26,7 +26,7 @@
 </table>
 <h2>Bigints</h2>
 <table>
-<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Value 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1" class="AnyRadixNumberInput"></td></tr>
+<tr><td class="ClickHoldChangeNumber noselect" id="Drag5" data-drag_increment_number_id="Testing5" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint">Value 5</td><td><input value="9007199254740992" type="number" id="Testing5" step="1"></td></tr>
 <tr><td class="ClickHoldChangeNumber noselect" id="Drag6" data-drag_increment_number_id="Testing6" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint" data-drag_increment_number_radix="16">Value 6 (hexadecimal)</td><td><input data-input_number_radix="16" id="Testing6" value="0" type="text" id="Testing5" step="1" class="AnyRadixNumberInput"></td></tr>
 <tr><td class="ClickHoldChangeNumber noselect" id="Drag7" data-drag_increment_number_id="Testing7" data-drag_increment_number_mousemove_distance="10" data-drag_increment_number_type="bigint" data-drag_increment_number_radix="2">Value 7 (binary)</td><td><input data-input_number_radix="2" id="Testing7" value="0" type="text" id="Testing5" step="1" class="AnyRadixNumberInput"></td></tr>
 </table>
@@ -55,10 +55,8 @@
 			CurrentNumberInputValueSelected = 0 //may be a double or a bigint
 			MouseState = ""
 			//addEventListener only applies to individual elements, so we need to loop to place an event listener to each class.
-				let Index = 0
-				while (Index < ClickHoldChangeNumberClasses.length) {
-					ClickHoldChangeNumberClasses[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, ClickHoldChangeNumberClasses[Index].id))
-					Index++
+				for (let Index = 0; Index < ClickHoldChangeNumberClasses.length; Index++) {
+					ClickHoldChangeNumberClasses[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, ClickHoldChangeNumberClasses[Index].id)) //We need to bind the parameters to prevent unintentional execution of this function.
 				}
 			document.addEventListener('mouseup', ExitPlaceDragOriginPos);
 			document.addEventListener('mousemove', logKey);
