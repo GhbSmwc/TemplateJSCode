@@ -1,0 +1,91 @@
+<script>
+function BetterPercentageUsingInts(Quantity, MaxQuantity, NumberOfDigitsAfterDec) {
+	//This function calculates a percentage of a value (must be bigint), and returns a
+	//string representing a percentage using fixed-point arithmetic (https://en.wikipedia.org/wiki/Fixed-point_arithmetic ).
+	//Unlike a typical Quantity*100/MaxQuantity (or Quantity / MaxQuantity * 100)
+	//This also reports if rounding to 0 or 100% have occurred.
+	//Note: Don't use negative or decimal numbers for any of the parameters!
+	
+	//Output: A string:
+	//"--" if MaxQuantity is 0 (division by zero in bigint is not handled unlike double-precision floating point)
+	//"<number>%" a percentage. Rounds half-up.
+	//"Greater than <1*(10**(2+NumberOfDigitsAfterDec_BigInt))-1>" if results between 99.99..% and 100% (avoids rounding up towards 100%).
+	//"Less than <1/(10**NumberOfDigitsAfterDec_BigInt)>" is same as above but avoids rounding towards 0%.
+	
+	//100.0 is 1000 in fixed point notation when NumberOfDigitsAfterDec_BigInt = 1
+	//100.00 is 10000 in fixed point notation when NumberOfDigitsAfterDec_BigInt = 2
+	//100.000 is 100000 in fixed point notation when NumberOfDigitsAfterDec_BigInt = 3
+	Quantity = BigInt(Quantity)
+	MaxQuantity = BigInt(MaxQuantity)
+	NumberOfDigitsAfterDec_BigInt = BigInt(NumberOfDigitsAfterDec)
+	if (MaxQuantity == 0n) {
+		return "--"
+	} else {
+		let Percentage = Quantity * (100n * 10n ** (NumberOfDigitsAfterDec_BigInt)) / MaxQuantity
+		let Modulo = Quantity * (100n * 10n ** (NumberOfDigitsAfterDec_BigInt)) % MaxQuantity
+		//Check if remainder is greater than or equal to half of MaxQuantity, if so, increment
+		//Percentage by 1 unit.
+		
+		//Get halfway point, note: this must be rounded half up as well so that if Modulo is 0.5 greater in the case MaxQuantity is an odd number,
+		//would correctly round upwards. Example: 3/2 is 1.5 (default round to 1), since we are dealing with integers, Remainder being 2 or more should be
+		//consider a round up for percentage
+			let HalfwayPointOfMaxQuantity = MaxQuantity / 2n
+			if (HalfwayPointOfMaxQuantity % 2n != 0n) {
+				HalfwayPointOfMaxQuantity++
+			}
+		//Round half-up
+			if (Modulo >= HalfwayPointOfMaxQuantity) { //round upwards
+				Percentage++
+				//We rounded the number up (actually increased the value), but it can potentially be at 100%, lets check it and if it did, override it.
+				if (Percentage == 100n*10n**NumberOfDigitsAfterDec_BigInt) {
+					//Rounded to 100% detected
+					//Note to self:
+					//Should say 99% if NumberOfDigitsAfterDec_BigInt = 0
+					//Should say 99.9% if NumberOfDigitsAfterDec_BigInt = 1
+					//99.99 if NumberOfDigitsAfterDec_BigInt = 2
+					//and so on.
+					//So basically the number of 9s after the decimal
+					//is NumberOfDigitsAfterDec_BigInt.
+						let DecimalPortion = ""
+						if (NumberOfDigitsAfterDec_BigInt != 0n) {
+							DecimalPortion += "."
+							for (let NineCount = 0; NineCount < NumberOfDigitsAfterDec; NineCount++) {
+								DecimalPortion += "9"
+							}
+						}
+					return "Greater than 99" + DecimalPortion + "%"
+				}
+			} else {
+				//Rounded downwards (default)
+				
+				if ((Modulo != 0n)&&(Percentage == 0n)) {
+					//Rounded to 0% detected
+					//Note to self:
+					//Should say 1% if NumberOfDigitsAfterDec_BigInt = 0
+					//Should say 0.1% if NumberOfDigitsAfterDec_BigInt = 1
+					//0.01% if NumberOfDigitsAfterDec_BigInt = 2
+					//and so on.
+					//Basically, if NumberOfDigitsAfterDec_BigInt = 2, the number of zeros
+					//between the decimal point and "1" is NumberOfDigitsAfterDec_BigInt - 1
+						let DecimalPortion = ""
+						if (NumberOfDigitsAfterDec_BigInt != 0n) {
+							DecimalPortion += "."
+							for (let ZeroCount = 0; ZeroCount < NumberOfDigitsAfterDec - 1; ZeroCount++) {
+								DecimalPortion += "0"
+							}
+							return "Less than 0" + DecimalPortion + "1%"
+						} else {
+							return "Less than 1%"
+						}
+				}
+			}
+			//Split the number separated by decimal point.
+			let WholeNumberPart = (Percentage.toString(10)).substring(0, Percentage.toString(10).length - NumberOfDigitsAfterDec)
+			let DecimalPart = (Percentage.toString(10)).substring(Percentage.toString(10).length - NumberOfDigitsAfterDec)
+		return WholeNumberPart + "." + DecimalPart + "%"
+	}
+}
+	console.log(BetterPercentageUsingInts(1, 100000, 2))
+	console.log(BetterPercentageUsingInts(199, 200, 0))
+	console.log(BetterPercentageUsingInts(99995, 100000, 2))
+</script>
