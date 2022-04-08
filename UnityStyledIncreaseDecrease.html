@@ -148,11 +148,11 @@
 				let BigintInInput = ParseBigIntValue(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).value, document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix)
 				let ValueForInputBigInt = RoundedDivisionQuotientRoundHalfUpBigInt(CurrentNumberInputValueSelected + RoundedDivisionQuotientRoundHalfUpBigInt(BigInt(MouseCoordinateArray[0] - MouseDragOriginX), MouseMoveDistanceToChange) * HTMLNumberStep, HTMLNumberStep) * HTMLNumberStep
 				//Min and max
-					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInput < SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
-						ValueForInput = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min != "")&&(ValueForInputBigInt < SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min))) {
+						ValueForInputBigInt = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).min)
 					}
-					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInput > SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
-						ValueForInput = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
+					if ((document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max != "")&&(ValueForInputBigInt > SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max))) {
+						ValueForInputBigInt = SafeConvertStringToBigint(document.getElementById(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_id).max)
 					}
 				let Radix = 10
 				if ((/^\d+$/).test(document.getElementById(WhichElementIDClicked).dataset.drag_increment_number_radix)) {
