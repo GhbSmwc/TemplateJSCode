@@ -47,7 +47,6 @@
 		var MouseDragOriginX = 0
 		var MouseDragOriginY = 0
 		var WhichElementIDClicked = ""
-		var ClickHoldChangeNumberClasses = document.getElementsByClassName("ClickHoldChangeNumber")
 		var MouseState = ""
 		var CurrentNumberInputValueSelected = 0 //may be a double or a bigint
 		MouseCoordinateArray = [,]
@@ -57,8 +56,8 @@
 			//CurrentNumberInputValueSelected = 0 //may be a double or a bigint
 			var MouseState = ""
 			//addEventListener only applies to individual elements, so we need to loop to place an event listener to each class.
-				for (let Index = 0; Index < ClickHoldChangeNumberClasses.length; Index++) {
-					ClickHoldChangeNumberClasses[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, ClickHoldChangeNumberClasses[Index].id)) //We need to bind the parameters to prevent unintentional execution of this function.
+				for (let Index = 0; Index < document.getElementsByClassName("ClickHoldChangeNumber").length; Index++) {
+					document.getElementsByClassName("ClickHoldChangeNumber")[Index].addEventListener('mousedown', PlaceDragOriginPos.bind(event, document.getElementsByClassName("ClickHoldChangeNumber")[Index].id)) //We need to bind the parameters to prevent unintentional execution of this function.
 				}
 			document.addEventListener('mouseup', ExitPlaceDragOriginPos);
 			document.addEventListener('mousemove', MouseMoveChangeNumber);
