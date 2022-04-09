@@ -56,31 +56,32 @@
 		//b, c, d, e, and f, including uppercase.
 			return CanConvertHexStringToBigInt = (/^([0-9]|[A-F]|[a-f])+$/).test(String);
 	}
-	function CorrectDecBigIntValue(String) {
-		//This converts the user's input decimal string (negative numbers not allowed)
-		//to BigInt.
-		if ((/^([0-9])+$/).test(String) == false) {
-			String = 0n
-		}
-		return CanConvertHexStringToBigInt = BigInt(String)
-	}
-	function CorrectHexBigIntValue(String) {
-		//This converts the user's input hex string (negative numbers not allowed)
-		//to BigInt.
-			if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
-				String = 0n
-			}
-			return CanConvertHexStringToBigInt = BigInt("0x" + String)
-	}
-	
-	function CorrectBinBigIntValue(String) {
-		//This converts the user's input binary string (negative numbers not allowed)
-		//to BigInt.
-			if ((/^([0]|[1])+$/).test(String) == false) {
-				String = 0n
-			}
-			return CanConvertHexStringToBigInt = BigInt("0b" + String)
-	}
+//	Use ParseBigIntValue(string, radix) instead.
+//		function CorrectDecBigIntValue(String) {
+//			//This converts the user's input decimal string (negative numbers not allowed)
+//			//to BigInt.
+//			if ((/^([0-9])+$/).test(String) == false) {
+//				String = 0n
+//			}
+//			return CanConvertHexStringToBigInt = BigInt(String)
+//		}
+//		function CorrectHexBigIntValue(String) {
+//			//This converts the user's input hex string (negative numbers not allowed)
+//			//to BigInt.
+//				if ((/^([0-9]|[A-F]|[a-f])+$/).test(String) == false) {
+//					String = 0n
+//				}
+//				return CanConvertHexStringToBigInt = BigInt("0x" + String)
+//		}
+//		
+//		function CorrectBinBigIntValue(String) {
+//			//This converts the user's input binary string (negative numbers not allowed)
+//			//to BigInt.
+//				if ((/^([0]|[1])+$/).test(String) == false) {
+//					String = 0n
+//				}
+//				return CanConvertHexStringToBigInt = BigInt("0b" + String)
+//		}
 	
 	function clamp(num, min, max) {
 		//Restrict a number within a specified range.
@@ -93,24 +94,30 @@
 		//Restrict a number within a specified range, bigInt edition.
 			return num <= min ? min : num >= max ? max : num;
 	}
-	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
-		//To be used along with a hex input the user enters.
-		//This function is for the increment/decrement buttons since
-		//only the "number" input (only allows characters 0-9) allows
-		//the increment/decrement action (up/down button when selected,
-		//and pressing up and down)
-			document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
-			//Compute()
+//	function IncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
+//		//To be used along with a hex input the user enters.
+//		//This function is for the increment/decrement buttons since
+//		//only the "number" input (only allows characters 0-9) allows
+//		//the increment/decrement action (up/down button when selected,
+//		//and pressing up and down)
+//			document.getElementById(WhatInput).value = clamp((parseInt(document.getElementById(WhatInput).value, 16) + ChangeBy), Min, Max).toString(16).toUpperCase()
+//			//Compute()
+//	}
+//	function BigintIncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
+//		//To be used along with a hex input the user enters.
+//		//This function is for the increment/decrement buttons since
+//		//only the "number" input (only allows characters 0-9) allows
+//		//the increment/decrement action (up/down button when selected,
+//		//and pressing up and down).
+//		//
+//		//This one is the BigInt version of IncreaseDecreaseHexInput.
+//			document.getElementById(WhatInput).value = BigintClamp((CorrectHexBigIntValue(document.getElementById(WhatInput).value) + ChangeBy), Min, Max).toString(16).toUpperCase()
+//	}
+	function IncreaseDecreaseNumber(ChangeBy, WhatInputID, Min, Max, Radix) {
+		document.getElementById(WhatInputID).value = clamp((parseInt(document.getElementById(WhatInputID).value, Radix) + ChangeBy), Min, Max).toString(Radix).toUpperCase()
 	}
-	function BigintIncreaseDecreaseHexInput(ChangeBy, WhatInput, Min, Max) {
-		//To be used along with a hex input the user enters.
-		//This function is for the increment/decrement buttons since
-		//only the "number" input (only allows characters 0-9) allows
-		//the increment/decrement action (up/down button when selected,
-		//and pressing up and down).
-		//
-		//This one is the BigInt version of IncreaseDecreaseHexInput.
-			document.getElementById(WhatInput).value = BigintClamp((CorrectHexBigIntValue(document.getElementById(WhatInput).value) + ChangeBy), Min, Max).toString(16).toUpperCase()
+	function IncreaseDecreaseBigInt(ChangeBy, WhatInputID, Min, Max, Radix) {
+		document.getElementById(WhatInputID).value = BigintClamp((ParseBigIntValue(document.getElementById(WhatInputID).value, Radix) + ChangeBy), Min, Max).toString(Radix).toUpperCase()
 	}
 	function DisplaySignedHexString(num) {
 		//When hex numbers are being displayed, they are displayed as -<HexValue>.
