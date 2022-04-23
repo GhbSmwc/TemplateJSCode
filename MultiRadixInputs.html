@@ -111,8 +111,8 @@ Bin: <input id="Example2_bin" type="text" onchange="MultiRadixInputs()" class="A
 		if (/^\d+$/.test(event.target.dataset.input_number_radix)) {
 			DefaultRadixEventTarget = parseInt(event.target.dataset.input_number_radix)
 		}
-		event.target.value = ParseBigIntValue(event.target.value, DefaultRadixEventTarget).toString(DefaultRadixEventTarget) //this makes it so that if there are invalid inputs, will replace that with 0 rather than only the other inputs.
-		let ListOfIds = event.target.dataset.list_of_input_radixes_ids_to_update.split(/\s/)
+		event.target.value = ParseBigIntValue(event.target.value, DefaultRadixEventTarget).toString(DefaultRadixEventTarget).toUpperCase() //this makes it so that it corrects the input of itself the user entered.
+		let ListOfIds = event.target.dataset.list_of_input_radixes_ids_to_update.match(/[A-Za-z0-9_]+/g)
 		for (let Index = 0; Index < ListOfIds.length; Index++) {
 			let DefaultRadixListOfIds = 10
 			if (/^\d+$/.test(document.getElementById(ListOfIds[Index]).dataset.input_number_radix)) {
