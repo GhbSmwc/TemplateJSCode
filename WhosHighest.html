@@ -1,0 +1,55 @@
+<script>
+	function GetHighestScores(ArrayOfObjects) {
+		//This function takes a given object, that contains "StringName" string and "ArrayNumbers" (array containing only numbers), check every possible pair,
+		//Obtains the highest number on each "ArrayNumbers" and outputs a unique list of {StringName, ArrayNumbers} with those highest number.
+		let OutputArray = []
+		let CheckedArray = new Array(ArrayOfObjects.length).fill(false)
+		//Check if all the arrays in each objects have the same length
+			let IsSameLength = true
+			for (let i = 1; (i < ArrayOfObjects.length)&&IsSameLength; i++) {
+				if (ArrayOfObjects[i].ArrayNumbers.length != ArrayOfObjects[0].ArrayNumbers.length) {
+					IsSameLength = false
+				}
+			}
+			if (IsSameLength == false) {
+				return null
+			}
+		//Compare their numbers
+			for (let i = 0; i < ArrayOfObjects.length; i++) {
+				let HighestValues = ArrayOfObjects[i].ArrayNumbers //Start with current number that may be broken by a higher number
+				if (CheckedArray[i] == false) { //Only compare stuff we haven't compare, to skip ones we already check, for optimization purposes
+					for (let i2 = i+1; i2 < ArrayOfObjects.length; i2++) { //Pair one item, with another item that is later down the list
+						if (CheckedArray[i2] == false) { //The 2nd of the pair should skip checked items.
+							if (ArrayOfObjects[i].StringName == ArrayOfObjects[i2].StringName) { //If by the same string..
+								for (let i3 = 0; i3 < ArrayOfObjects[i].ArrayNumbers.length; i3++) { //Replace the corresponding numbers in the array of the two in their arrays with who's highest, of the same string
+									HighestValues[i3] = Math.max(ArrayOfObjects[i].ArrayNumbers[i3], ArrayOfObjects[i2].ArrayNumbers[i3])
+								}
+								CheckedArray[i2] = true //Marked this as checked to skip over.
+							}
+						}
+					}
+					OutputArray.push({StringName: ArrayOfObjects[i].StringName, ArrayNumbers: HighestValues}) //Place highest numbers in the output array
+				}
+			}
+		return OutputArray
+	}
+	
+	
+	let Scores = [
+		{StringName: "Person 1", ArrayNumbers: [10, 2, 3]},
+		{StringName: "Person 1", ArrayNumbers: [100, 200, 300]},
+		{StringName: "Person 1", ArrayNumbers: [11, 20, 30]},
+		{StringName: "Person 2", ArrayNumbers: [6, 2, 1]},
+		{StringName: "Person 2", ArrayNumbers: [1, 1, 1]},
+		{StringName: "Person 2", ArrayNumbers: [2, 2, 2]},
+		{StringName: "Person 3", ArrayNumbers: [2, 2, 8]},
+		{StringName: "Person 3", ArrayNumbers: [3, 3, 9]},
+		{StringName: "Person 3", ArrayNumbers: [0, 0, 0]},
+		{StringName: "Person 3", ArrayNumbers: [10, 10, 10]}
+	]
+	let test = GetHighestScores(Scores)
+	//Person 1's highest: [100,200,300]
+	//Person 2's highest: [6, 2, 2]
+	//Person 3's highest: [10, 10, 10]
+	let breakpoint_me = 0 //Set breakpoint here (can't breakpoint in areas that aren't code, or places that won't be executed)
+</script>
