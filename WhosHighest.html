@@ -2,6 +2,7 @@
 	function GetHighestScores(ArrayOfObjects) {
 		//This function takes a given object, that contains "StringName" string and "ArrayNumbers" (array containing only numbers), check every possible pair,
 		//Obtains the highest number on each "ArrayNumbers" and outputs a unique list of {StringName, ArrayNumbers} with those highest number.
+		//If "ArrayNumbers" have different lengths, returns null as a failsafe.
 		let OutputArray = []
 		let CheckedArray = new Array(ArrayOfObjects.length).fill(false)
 		//Check if all the arrays in each objects have the same length
