@@ -1,5 +1,8 @@
 <script>
-	function BetterPercentageUsingInts(Quantity, MaxQuantity, NumberOfDigitsAfterDec) {
+	function BetterPercentageUsingInts(Quantity, MaxQuantity, NumberOfDigitsAfterDec, Clamped) {
+		//Quantity = Amount in relation of MaxQuantity
+		//MaxQuantity = Total
+		//Clamped = (boolean): false = allow greater than 100%, true = only 0%-100% will display.
 		//This function calculates a percentage of a value (must be bigint), and returns a
 		//string representing a percentage using fixed-point arithmetic (https://en.wikipedia.org/wiki/Fixed-point_arithmetic ).
 		//Unlike a typical Quantity*100/MaxQuantity (or Quantity / MaxQuantity * 100)
@@ -36,6 +39,7 @@
 			//Round half-up
 				if (Modulo >= HalfwayPointOfMaxQuantity) { //round upwards
 					Percentage++
+					if (Clamped) {Percentage = BigintClamp(Percentage, 0n, 100n * 10n ** (NumberOfDigitsAfterDec_BigInt))}
 					//We rounded the number up (actually increased the value), but it can potentially be at 100%, lets check it and if it did, override it.
 					if (Percentage == 100n*10n**NumberOfDigitsAfterDec_BigInt) {
 						//Rounded to 100% detected
@@ -80,6 +84,7 @@
 					}
 				}
 				//Split the number separated by decimal point.
+					if (Clamped) {Percentage = BigintClamp(Percentage, 0n, 100n * 10n ** (NumberOfDigitsAfterDec_BigInt))}
 					let OutputString = Percentage.toString(10)
 					let WholeNumberPart = OutputString.substring(0, OutputString.length - NumberOfDigitsAfterDec)
 					if (WholeNumberPart == "") {
@@ -105,4 +110,9 @@
 	//console.log(BetterPercentageUsingInts(1, 100000, 2))
 	//console.log(BetterPercentageUsingInts(199, 200, 0))
 	//console.log(BetterPercentageUsingInts(99995, 100000, 2))
+	
+	function BigintClamp(num, min, max) {
+		//Restrict a number within a specified range, bigInt edition.
+			return num <= min ? min : num >= max ? max : num;
+	}
 </script>
