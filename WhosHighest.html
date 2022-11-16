@@ -1,7 +1,8 @@
 <script>
-	function GetHighestScores(ArrayOfObjects) {
+	function GetHighestScores() {
+		let ArrayOfObjects = this
 		//This function takes a given object, that contains "StringName" string and "ArrayNumbers" (array containing only numbers), check every possible pair,
-		//Obtains the highest number on each "ArrayNumbers" and outputs a unique list of {StringName, ArrayNumbers} with those highest number.
+		//Obtains the highest number on each "ArrayNumbers" and outputs a new array containing a unique list of {StringName, ArrayNumbers} with those highest number.
 		//If "ArrayNumbers" have different lengths, returns null as a failsafe.
 		let OutputArray = []
 		let CheckedArray = new Array(ArrayOfObjects.length).fill(false)
@@ -48,7 +49,9 @@
 		{StringName: "Person 3", ArrayNumbers: [0, 0, 0]},
 		{StringName: "Person 3", ArrayNumbers: [10, 10, 10]}
 	]
-	let test = GetHighestScores(Scores)
+	Scores.GetHighestScores = GetHighestScores //Add method.
+	
+	let test = Scores.GetHighestScores()
 	//Person 1's highest: [100,200,300]
 	//Person 2's highest: [6, 2, 2]
 	//Person 3's highest: [10, 10, 10]
